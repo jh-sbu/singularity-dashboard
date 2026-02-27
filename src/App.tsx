@@ -1,35 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react';
+import { GameProvider, useGame } from './context/GameContext';
+import type { GameAction } from './types/index';
 
-function App() {
-  const [count, setCount] = useState(0)
+function DebugView() {
+  const { state, dispatch } = useGame();
+
+  useEffect(() => {
+    (window as unknown as { dispatch: React.Dispatch<GameAction> }).dispatch = dispatch;
+  }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ fontFamily: 'monospace', padding: '1rem' }}>
+      <p>RP: {state.researchPoints.toFixed(2)}</p>
+      <p>Rate: {state.researchRate}/s</p>
+      <p>Elapsed: {state.elapsedTime.toFixed(1)}s</p>
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return <GameProvider><DebugView /></GameProvider>;
+}
